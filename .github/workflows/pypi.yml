@@ -1,0 +1,35 @@
+name: hengbot-api_pypi
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+    steps:
+    - uses: actions/checkout@main
+    - name: Get submodules
+      run: |
+        git submodule update --init --recursive
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install libbluetooth-dev
+        python3 -m pip install --upgrade pip
+    - name: Build
+      run: |
+        python3 -m pip install .
+        python3 setup.py sdist
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        skip_existing: true
