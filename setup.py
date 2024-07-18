@@ -25,7 +25,7 @@
 from setuptools import setup, find_packages
 
 
-version = '0.0.9'
+version = '0.1.1'
 
 
 setup(
@@ -39,7 +39,8 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(),
     install_requires=[
-
+        'websocket-client',
+        'dashscope',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
