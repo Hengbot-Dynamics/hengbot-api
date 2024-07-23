@@ -330,7 +330,7 @@ def get_bd_address():
         return None
 
 def run_file(file_path):
-    global app
+    global app,threadrunflag
     print(file_path)
     os.path.exists(file_path)
     with open(file_path, 'r') as file:
@@ -339,7 +339,7 @@ def run_file(file_path):
     try:
         exec(file_content, globals(), globals())
     except SystemExit:
-        print("SystemExit")
+        threadrunflag = False
     app.services[0].characteristics[0].threadrunflag = False
 
 command = ['hciconfig', 'hci0', 'reset']
