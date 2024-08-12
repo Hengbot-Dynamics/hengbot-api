@@ -282,7 +282,7 @@ class ctrl_mode:
 
 class edit_mode(threading.Thread):
     SPEED_FASTEST, SPEED_FAST, SPEED_SLOW, SPEED_SLOWEST = "Fastest", "Fast", "Slow", "Slowest"
-    def __init__(self, robot_ctrl, sendInterval=0.1):
+    def __init__(self, robot_ctrl, sendInterval=0.01):
         super().__init__()
         self.robot_ctrl = robot_ctrl
         self.pitch = 0
