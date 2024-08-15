@@ -78,7 +78,8 @@ class robot_control(threading.Thread):
             self.mod_obj.close()
 
         if self.isconnected:
-            self.reset()
+            if not hasattr(self.mod_obj, 'end_reset') or self.mod_obj.end_reset:
+                self.reset()
         self.ws.keep_running = False
         self.loop_state = False
         self.join()
@@ -108,7 +109,7 @@ class robot_control(threading.Thread):
     def del_connected_callback(self, function=None):
         self.open_callback.remove(function) if function else self.open_callback.pop()
 
-    def switch_mode(self, target):
+    def switch_mode(self, target, end_reset=True):
         if target == MODE_WAVE:
             self.ws.send('{"cmd": "Mode_Switch", "target": "' + MODE_EDIT + '"}')
         else:
@@ -119,9 +120,9 @@ class robot_control(threading.Thread):
         if target == MODE_CTRL:
             self.mod_obj = ctrl_mode(self)
         elif target == MODE_TEACH:
-            self.mod_obj = teach_mode(self)
+            self.mod_obj = teach_mode(self, end_reset=end_reset)
         elif target == MODE_EDIT:
-            self.mod_obj = edit_mode(self)
+            self.mod_obj = edit_mode(self, end_reset=end_reset)
         elif target == MODE_WAVE:
             self.mod_obj = wave_mode(self)
         return self.mod_obj
@@ -153,7 +154,7 @@ class robot_control(threading.Thread):
 
 
 class teach_mode:
-    def __init__(self, robot_ctrl):
+    def __init__(self, robot_ctrl, end_reset=True):
         self.robot_ctrl = robot_ctrl
         self.robot_ctrl.add_message_callback(self.record_msg)
         self.recordState = False
@@ -161,6 +162,7 @@ class teach_mode:
         self.recordJson = []
         self.playJson = []
         self.closeState = False
+        self.end_reset = end_reset
 
     def close(self):
         self.closeState = True
@@ -282,7 +284,7 @@ class ctrl_mode:
 
 class edit_mode(threading.Thread):
     SPEED_FASTEST, SPEED_FAST, SPEED_SLOW, SPEED_SLOWEST = "Fastest", "Fast", "Slow", "Slowest"
-    def __init__(self, robot_ctrl, sendInterval=0.01):
+    def __init__(self, robot_ctrl, end_reset=True, sendInterval=0.01):
         super().__init__()
         self.robot_ctrl = robot_ctrl
         self.pitch = 0
@@ -311,6 +313,8 @@ class edit_mode(threading.Thread):
         self.speed = 'Slowest'
         self.loop_state = True
         self.interval = sendInterval
+
+        self.end_reset = end_reset
         self.start()
 
     def run(self):
@@ -442,6 +446,36 @@ class edit_mode(threading.Thread):
         self.time = data['time']
         self.acc = data['acc']
         self.speed = data['speed']
+
+    def play(self, path='keyframe.txt'):
+        with open(path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            for i in lines:
+                data = json.loads(i)
+                self.pitch = data['Body']['pitch']
+                self.roll = data['Body']['roll']
+                self.tran_x = data['Body']['tran_x']
+                self.tran_y = data['Body']['tran_y']
+                self.tran_z = data['Body']['tran_z']
+                self.yaw = data['Body']['yaw']
+                self.headpitch = data['Head']['pitch']
+                self.headyaw = data['Head']['yaw']
+                self.front_left_leg_x = data['FootPoint']['FrontLeftLeg']['x']
+                self.front_left_leg_y = data['FootPoint']['FrontLeftLeg']['y']
+                self.front_left_leg_z = data['FootPoint']['FrontLeftLeg']['z']
+                self.front_right_leg_x = data['FootPoint']['FrontRightLeg']['x']
+                self.front_right_leg_y = data['FootPoint']['FrontRightLeg']['y']
+                self.front_right_leg_z = data['FootPoint']['FrontRightLeg']['z']
+                self.back_left_leg_x = data['FootPoint']['BackLeftLeg']['x']
+                self.back_left_leg_y = data['FootPoint']['BackLeftLeg']['y']
+                self.back_left_leg_z = data['FootPoint']['BackLeftLeg']['z']
+                self.back_right_leg_x = data['FootPoint']['BackRightLeg']['x']
+                self.back_right_leg_y = data['FootPoint']['BackRightLeg']['y']
+                self.back_right_leg_z = data['FootPoint']['BackRightLeg']['z']
+                self.time = data['time']
+                self.acc = data['acc']
+                self.speed = data['speed']
+                time.sleep(self.interval)
 
 
 class wave_mode(edit_mode):

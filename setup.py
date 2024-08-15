@@ -25,7 +25,7 @@
 from setuptools import setup, find_packages
 
 
-version = '0.1.1'
+version = '0.1.3'
 
 
 setup(
@@ -40,7 +40,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'websocket-client',
-        'dashscope',
+        # 'dashscope',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
