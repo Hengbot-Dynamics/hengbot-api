@@ -28,7 +28,7 @@ git clone github.com/hengbot/hengbot-api
 ### 3.1 获取电池信息，硬件错误状态及网络信息
 
 ``` Python
-from hengbot import sparky
+from hengbot_api import sparky
 # set IP
 IP = '192.168.8.139'
 def test_get_status(ip):
@@ -81,7 +81,7 @@ test_get_status(IP)
 ### 3.2  进入遥控模式，并控制哮天转圈
 
 ```Python
-from hengbot import sparky
+from hengbot_api import sparky
 # set IP
 IP = '192.168.8.139'
 def test_circles(ip, timeout = 10):
@@ -108,7 +108,7 @@ test_circles(IP)
 ##### 3.3.1 身体摇摆
 
 ```Python
-from hengbot import sparky
+from hengbot_api import sparky
 # set IP
 IP = '192.168.8.139'
 def test_swing(ip):
@@ -131,7 +131,7 @@ test_swing(IP)
 ##### 3.3.2 蹲下起立
 
 ```Python
-from hengbot import sparky
+from hengbot_api import sparky
 # set IP
 IP = '192.168.8.139'
 def test_crouch(ip, timeout = 5):
@@ -153,7 +153,7 @@ test_crouch(IP)
 ##### 3.3.3 点头摇头
 
 ```Python
-from hengbot import sparky
+from hengbot_api import sparky
 # set IP
 IP = '192.168.8.139'
 def test_shake_head(ip, timeout = 3):
@@ -186,7 +186,7 @@ test_shake_head(IP)
 ### 3.6 进入示教模式，录制动作并播放动作
 
 ```Python
-from hengbot import sparky
+from hengbot_api import sparky
 # set IP
 IP = '192.168.8.139'
 def test_play(ip, timeout = 10):
